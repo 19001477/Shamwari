@@ -20,18 +20,30 @@ package com.example.shamwari;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -48,7 +60,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -72,10 +90,11 @@ import java.util.UUID;
 public class add_property extends AppCompatActivity {
 
     private Uri filePath;
-    private final int PICK_IMAGE_REQUEST = 22;
+    private final int PICK_IMAGE_REQUEST = 71;
 
     private String name;
     private Spinner catSpinner;
+    private CheckBox cbImage;
 
     FirebaseStorage storage;
     StorageReference storageReference;
@@ -209,12 +228,15 @@ public class add_property extends AppCompatActivity {
     // Geeksforgeeks (2019)
     // Select Image method
     private void imageSelect() {
+        cbImage = (CheckBox) findViewById(R.id.cbImage);
+
         try {
             // Defining Implicit Intent to mobile gallery
             Intent intent = new Intent();
             intent.setType("image/*");
             intent.setAction(Intent.ACTION_GET_CONTENT);
             startActivityForResult(Intent.createChooser(intent, "Select Image from here..."), PICK_IMAGE_REQUEST);
+            cbImage.setChecked(true);
         }
         catch(Exception e) {
             Toast.makeText(getApplicationContext(),"Error: " + e.toString(),Toast.LENGTH_SHORT).show();

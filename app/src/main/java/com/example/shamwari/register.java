@@ -17,6 +17,7 @@ Tutorialspoint.com. 2021. Java - Sending Email - Tutorialspoint. [online] Availa
 
 package com.example.shamwari;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -27,6 +28,8 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -59,59 +62,53 @@ public class register extends AppCompatActivity {
             DatabaseReference agentUserRef = agentRef.child(username);
             DatabaseReference standardUserRef = standardRef.child(username);
 
-            //Checks to see if the user already exists based on username
-            ValueEventListener eventListener = new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if(!dataSnapshot.exists()) {
-                        //User does not exist
-                        Switch simpleSwitch = (Switch) findViewById(R.id.swAdmin);
-                        Boolean switchState = simpleSwitch.isChecked();
-                        boolean isAgentSuccess = false;
-                        boolean isStandardSuccess = false;
+                ValueEventListener eventListener = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (!dataSnapshot.exists()) {
+                            //User does not exist
+                            Switch simpleSwitch = (Switch) findViewById(R.id.swAdmin);
+                            Boolean switchState = simpleSwitch.isChecked();
+                            boolean isAgentSuccess = false;
+                            boolean isStandardSuccess = false;
 
-                        //Checks to see if user is an agent or not
-                        if (switchState == true) {
-                            if (password1.equals(password2)) {
-                                //Registers agent user
-                                agentRef.push().setValue(username);
-                                agentUserRef.child("password").setValue(password1);
-                                agentUserRef.child("username").setValue(username);
-                                agentUserRef.child("userType").setValue("agent");
-                                agentUserRef.child("listedProps").setValue(0);
-                                agentUserRef.child("listGoal").setValue(5);
-                                isAgentSuccess = true;
+                            //Checks to see if user is an agent or not
+                            if (switchState == true) {
+                                if (password1.equals(password2)) {
+                                    //Registers agent user
+                                    agentRef.push().setValue(username);
+                                    agentUserRef.child("password").setValue(password1);
+                                    agentUserRef.child("username").setValue(username);
+                                    agentUserRef.child("userType").setValue("agent");
+                                    agentUserRef.child("listedProps").setValue(0);
+                                    agentUserRef.child("listGoal").setValue(5);
+                                    isAgentSuccess = true;
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
+                                }
+                                changeActivityAgent(isAgentSuccess, username);
+                            } else {
+                                if (password1.equals(password2)) {
+                                    //Registers normal user
+                                    standardRef.push().setValue(username);
+                                    standardUserRef.child("password").setValue(password1);
+                                    standardUserRef.child("username").setValue(username);
+                                    standardUserRef.child("userType").setValue("standard");
+                                    isStandardSuccess = true;
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
+                                }
+                                changeActivityStandard(isStandardSuccess);
                             }
-                            else {
-                                Toast.makeText(getApplicationContext(),"Passwords do not match",Toast.LENGTH_SHORT).show();
-                            }
-                            changeActivityAgent(isAgentSuccess, username);
-                        }
-                        else {
-                            if (password1.equals(password2)) {
-                                //Registers normal user
-                                standardRef.push().setValue(username);
-                                standardUserRef.child("password").setValue(password1);
-                                standardUserRef.child("username").setValue(username);
-                                standardUserRef.child("userType").setValue("standard");
-                                isStandardSuccess = true;
-                            }
-                            else {
-                                Toast.makeText(getApplicationContext(),"Passwords do not match",Toast.LENGTH_SHORT).show();
-                            }
-                            changeActivityStandard(isStandardSuccess);
+                        } else {
+                            Toast.makeText(getApplicationContext(), "User already exists", Toast.LENGTH_SHORT).show();
                         }
                     }
-                    else {
-                        Toast.makeText(getApplicationContext(),"User already exists",Toast.LENGTH_SHORT).show();
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
                     }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {}
-            };
-
-            agentUserRef.addListenerForSingleValueEvent(eventListener);
+                };
+                agentUserRef.addListenerForSingleValueEvent(eventListener);
         }
         catch (Exception e)
         {

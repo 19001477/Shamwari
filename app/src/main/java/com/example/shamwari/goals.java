@@ -40,6 +40,7 @@ public class goals extends AppCompatActivity {
 
     private ProgressBar simpleProgressBar;
     private TextView tvGoal;
+    private TextView tvListed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +50,7 @@ public class goals extends AppCompatActivity {
         //Instantiates progress bar
         simpleProgressBar = (ProgressBar)findViewById(R.id.pbListed);
         tvGoal = (TextView) findViewById(R.id.tvProps);
+        tvListed = (TextView) findViewById(R.id.tvCurrentProps);
 
         checkListed();
         getMax();
@@ -66,6 +68,7 @@ public class goals extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int value = dataSnapshot.getValue(int.class);
                 simpleProgressBar.setProgress(value);
+                tvListed.setText(String.valueOf(value));
             }
 
             @Override

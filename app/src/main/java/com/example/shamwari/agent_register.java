@@ -35,6 +35,8 @@ import com.google.firebase.database.ValueEventListener;
 
 public class agent_register extends AppCompatActivity {
 
+    private final String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,37 +55,60 @@ public class agent_register extends AppCompatActivity {
         String cellNum = tvCellNum.getText().toString().trim();
         String email = tvEmail.getText().toString().trim();
 
-        try {
-            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-            DatabaseReference agentRef = rootRef.child("Users").child("agent").child(globals.loggedUser);
+        if(tvEmail.getText().toString().isEmpty()) {
+            Toast.makeText(getApplicationContext(),"enter email address",Toast.LENGTH_SHORT).show();
+        }
+        else {
+            if (tvEmail.getText().toString().trim().matches(emailPattern)) {
+                if (countString(cellNum) == 10) {
+                    try {
+                        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                        DatabaseReference agentRef = rootRef.child("Users").child("agent").child(globals.loggedUser);
 
-            //Adds values to database under existing agent node if it exists
-            ValueEventListener eventListener = new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.exists()) {
-                        agentRef.child("fullName").setValue(fullName);
-                        agentRef.child("cellNum").setValue(cellNum);
-                        agentRef.child("email").setValue(email);
-                        changeActivity();
-                    }
-                    else {
-                        Toast.makeText(getApplicationContext(),"There was an error",Toast.LENGTH_SHORT).show();
+                        //Adds values to database under existing agent node if it exists
+                        ValueEventListener eventListener = new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    agentRef.child("fullName").setValue(fullName);
+                                    agentRef.child("cellNum").setValue(cellNum);
+                                    agentRef.child("email").setValue(email);
+                                    changeActivity();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "There was an error", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                Toast.makeText(getApplicationContext(), "There was an error", Toast.LENGTH_SHORT).show();
+                            }
+                        };
+
+                        agentRef.addListenerForSingleValueEvent(eventListener);
+                    } catch (Exception e) {
+                        Log.w("Firebase", "Failed to update value.", e);
                     }
                 }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Toast.makeText(getApplicationContext(),"There was an error",Toast.LENGTH_SHORT).show();
+                else {
+                    Toast.makeText(getApplicationContext(),"Invalid cellphone number", Toast.LENGTH_SHORT).show();
                 }
-            };
+            } else {
+                Toast.makeText(getApplicationContext(),"Invalid email address", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
-            agentRef.addListenerForSingleValueEvent(eventListener);
+    private int countString(String string) {
+        int count = 0;
+
+        for(int i = 0; i < string.length(); i++) {
+            if(string.charAt(i) != ' ') {
+                count++;
+            }
         }
-        catch (Exception e)
-        {
-            Log.w("Firebase", "Failed to update value.", e);
-        }
+
+        return count;
     }
 
     //Goes to login view

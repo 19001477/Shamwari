@@ -35,7 +35,7 @@
         android:layout_marginEnd="20dp"
         android:background="@drawable/rounded_edittext"
         android:ems="10"
-        android:inputType="textNoSuggestions"
+        android:inputType="textNoSuggestions|number"
         android:text=""
         android:textAlignment="center"
         android:textColor="#757575"
@@ -86,7 +86,7 @@
         android:layout_marginEnd="20dp"
         android:background="@drawable/rounded_edittext"
         android:ems="10"
-        android:inputType="textNoSuggestions"
+        android:inputType="textNoSuggestions|number"
         android:text=""
         android:textAlignment="center"
         android:textColor="#757575"
@@ -206,5 +206,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView23" />
+
+    <CheckBox
+        android:id="@+id/cbImage"
+        style="@style/Widget.AppCompat.CompoundButton.CheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="22dp"
+        android:buttonTint="#FFFFFF"
+        android:clickable="false"
+        app:layout_constraintStart_toEndOf="@+id/btnUpload"
+        app:layout_constraintTop_toBottomOf="@+id/tvAddress" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
